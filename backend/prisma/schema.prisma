@@ -1,0 +1,30 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Shipment {
+  id             Int             @id @default(autoincrement())
+  trackingNumber String          @unique
+  productName    String
+  status         String
+  events         ShipmentEvent[]
+  createdAt      DateTime        @default(now())
+}
+
+model ShipmentEvent {
+  id          Int      @id @default(autoincrement())
+  shipmentId  Int
+  status      String
+  description String
+  createdAt   DateTime @default(now())
+
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  @@index([shipmentId, createdAt])
+}
